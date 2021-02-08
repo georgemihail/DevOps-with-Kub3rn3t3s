@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-services
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mainservices
+  template:
+    metadata:
+      labels:
+        app: mainservices
+    spec:
+      volumes:
+        - name: shared-timestamp
+          emptyDir: {}
+      containers:
+        - name: generate-timestamp
+          image: georgemihail/generate-timestamp
+          volumeMounts:
+          - name: shared-timestamp
+            mountPath: /usr/src/app/time
+        - name: output-with-hash
+          image: georgemihail/output-with-hash
+          volumeMounts:
+          - name: shared-timestamp
+            mountPath: /usr/src/app/time

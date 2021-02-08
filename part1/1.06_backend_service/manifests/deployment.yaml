@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: single-page-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: singlepage
+  template:
+    metadata:
+      labels:
+        app: singlepage
+    spec:
+      containers:
+        - name: singlepage
+          image: georgemihail/single-page-app

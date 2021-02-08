@@ -1,0 +1,48 @@
+apiVersion: v1
+items:
+- apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      objectset.rio.cattle.io/applied: '{"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{"objectset.rio.cattle.io/id":"","objectset.rio.cattle.io/owner-gvk":"k3s.cattle.io/v1,
+        Kind=Addon","objectset.rio.cattle.io/owner-name":"local-storage","objectset.rio.cattle.io/owner-namespace":"kube-system","storageclass.kubernetes.io/is-default-class":"true"},"labels":{"objectset.rio.cattle.io/hash":"183f35c65ffbc3064603f43f1580d8c68a2dabd4"},"name":"local-path"},"provisioner":"rancher.io/local-path","reclaimPolicy":"Delete","volumeBindingMode":"WaitForFirstConsumer"}'
+      objectset.rio.cattle.io/id: ""
+      objectset.rio.cattle.io/owner-gvk: k3s.cattle.io/v1, Kind=Addon
+      objectset.rio.cattle.io/owner-name: local-storage
+      objectset.rio.cattle.io/owner-namespace: kube-system
+      storageclass.kubernetes.io/is-default-class: "true"
+    creationTimestamp: "2021-01-31T09:14:00Z"
+    labels:
+      objectset.rio.cattle.io/hash: 183f35c65ffbc3064603f43f1580d8c68a2dabd4
+    managedFields:
+    - apiVersion: storage.k8s.io/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:objectset.rio.cattle.io/applied: {}
+            f:objectset.rio.cattle.io/id: {}
+            f:objectset.rio.cattle.io/owner-gvk: {}
+            f:objectset.rio.cattle.io/owner-name: {}
+            f:objectset.rio.cattle.io/owner-namespace: {}
+            f:storageclass.kubernetes.io/is-default-class: {}
+          f:labels:
+            .: {}
+            f:objectset.rio.cattle.io/hash: {}
+        f:provisioner: {}
+        f:reclaimPolicy: {}
+        f:volumeBindingMode: {}
+      manager: k3s
+      operation: Update
+      time: "2021-01-31T09:14:00Z"
+    name: local-path
+    resourceVersion: "276"
+    uid: 9756892a-b655-4c32-8832-f28870075e39
+  provisioner: rancher.io/local-path
+  reclaimPolicy: Delete
+  volumeBindingMode: WaitForFirstConsumer
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

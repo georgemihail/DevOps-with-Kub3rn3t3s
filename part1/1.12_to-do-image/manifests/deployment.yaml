@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-img
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todoimages
+  template:
+    metadata:
+      labels:
+        app: todoimages
+    spec:
+      volumes:
+        - name: shared-image
+          persistentVolumeClaim:
+            claimName: image-claim
+      containers:
+        - name: image-fetch-todo
+          image: georgemihail/image-fetch-todo:latest
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+        - name: to-do-photo
+          image: georgemihail/to-do-photo
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+        

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-ping-pong
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pingpongpersisiting
+  template:
+    metadata:
+      labels:
+        app: pingpongpersisiting
+    spec:
+      volumes:
+        - name: shared-file
+          persistentVolumeClaim:
+            claimName: image-claim
+      containers:
+        - name: ping-pong-share
+          image: georgemihail/ping-persisting:latest
+          volumeMounts:
+          - name: shared-file
+            mountPath: /usr/src/app/file
+        - name: main-image-share
+          image: georgemihail/main-ping:latest
+          volumeMounts:
+          - name: shared-file
+            mountPath: /usr/src/app/file

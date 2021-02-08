@@ -1,0 +1,15 @@
+{
+  "name": "generate-string",
+  "version": "1.0.0",
+  "description": "generate a random string on startup",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "George",
+  "license": "ISC",
+  "dependencies": {
+    "uuid": "^8.3.2"
+  }
+}
