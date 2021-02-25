@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend-psg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todobackendpsg
+  template:
+    metadata:
+      labels:
+        app: todobackendpsg
+    spec:
+      containers:
+        - name: todo-connected-backend
+          image: georgemihail/todo-backend-db:latest
+          env:
+            - name: USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: USERNAME
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: psg-secret
+                  key: PASSWORD
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: HOST
+            - name: DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: DATABASE

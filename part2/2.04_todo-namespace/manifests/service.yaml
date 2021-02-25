@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: todofront-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: todoconnected
+  ports:
+    - port: 5678
+      protocol: TCP
+      targetPort: 3000

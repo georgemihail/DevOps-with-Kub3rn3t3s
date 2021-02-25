@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-backend-serv
+spec:
+  type: ClusterIP
+  selector:
+    app: todoconnected
+  ports:
+    - port: 1234
+      protocol: TCP
+      targetPort: 3005

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-connected-psg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todoconnectedpsg
+  template:
+    metadata:
+      labels:
+        app: todoconnectedpsg
+    spec:
+      volumes:
+        - name: shared-image
+          persistentVolumeClaim:
+            claimName: image-claim
+      containers:
+        - name: image-fetch-todo
+          image: georgemihail/image-fetch-todo:latest
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+        - name: todo-frontend-configmap
+          image: georgemihail/todo-frontend-configmap:latest
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+          env:
+            - name: BASEURL
+              valueFrom:
+                configMapKeyRef: 
+                  name: todo-frontend-cfm
+                  key: BASEURL
