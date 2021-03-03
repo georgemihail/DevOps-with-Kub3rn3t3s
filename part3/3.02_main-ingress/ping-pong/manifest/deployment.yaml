@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-pong-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pingpongclient
+  template:
+    metadata:
+      labels:
+        app: pingpongclient
+    spec:
+      containers:
+        - name: ping-pong-client
+          image: georgemihail/pingpong-client-gke:latest
+          env:
+            - name: BACKENDLINK
+              valueFrom:
+                configMapKeyRef:
+                  name: pingpong-client-config
+                  key: BACKENDLINK

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-pong-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pingpongbackend
+  template:
+    metadata:
+      labels:
+        app: pingpongbackend
+    spec:
+      containers:
+        - name: ping-pong-backend
+          image: georgemihail/ping-pong-backend:latest
+          env:
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: pingpong-backend-config
+                  key: HOST
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: psg-secret
+                  key: PASSWORD
+            - name: DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: pingpong-backend-config
+                  key: DATABASE
+          resources:
+            limits:
+              cpu: "400m"
+              memory: "128Mi"

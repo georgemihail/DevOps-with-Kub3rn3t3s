@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingpong-client-config
+  namespace: default
+data:
+  BACKENDLINK: 'http://pingpong-backend-svc:3456/ping'

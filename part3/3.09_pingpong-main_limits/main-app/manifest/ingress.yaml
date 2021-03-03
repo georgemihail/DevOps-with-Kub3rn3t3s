@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: main-ingress
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /
+          backend:
+            serviceName: main-app-svc
+            servicePort: 6789
+        - path: /pingpong
+          backend:
+            serviceName: ping-pong-svc
+            servicePort: 80

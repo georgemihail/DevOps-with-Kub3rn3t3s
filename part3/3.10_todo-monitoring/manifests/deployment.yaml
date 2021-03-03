@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend-psg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todobackendpsg
+  template:
+    metadata:
+      labels:
+        app: todobackendpsg
+    spec:
+      volumes:
+        - name: shared-image
+          persistentVolumeClaim:
+            claimName: image-claim
+      containers:
+        - name: image-fetch-to-do
+          image: georgemihail/image-fetch-to-do:latest
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+        - name: todo-static-backend
+          image: georgemihail/todo-static-backend
+          env:
+            - name: USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: USERNAME
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: psg-secret
+                  key: PASSWORD
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: HOST
+            - name: DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: DATABASE
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "128Mi"

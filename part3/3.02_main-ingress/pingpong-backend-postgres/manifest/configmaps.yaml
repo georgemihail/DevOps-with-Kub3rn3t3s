@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingpong-backend-config
+  namespace: default
+data:
+  HOST: 'postgres-svc.default:5432'
+  DATABASE: 'postgres'

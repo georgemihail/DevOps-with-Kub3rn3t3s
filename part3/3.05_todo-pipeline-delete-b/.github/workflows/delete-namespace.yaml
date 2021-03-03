@@ -1,0 +1,38 @@
+name: Delete namespace after a branch deletion
+
+on:
+  delete:
+
+env:
+  GKE_CLUSTER: dwk-cluster-george
+  GKE_ZONE: europe-north1-b
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+jobs:
+  delete-namespace-after-branch-deletion:
+    name: Delete namespace after a branch deletion
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+  
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{secrets.GKE_PROJECT}}
+        service_account_key: ${{secrets.GKE_SA_KEY}}
+        # export_default_credentials: true
+    
+    - name: Use gcloud CLI
+      run: gcloud info
+    
+    - run: gcloud --quiet auth configure-docker
+
+    - run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+
+    - name: Delete namespace
+      run: |-
+        echo "$event.ref_type: {{ github.event.ref_type }}"
+        echo "delete ${{ github.event.ref }} namespace"
+        kubectl delete namespace ${{ github.event.ref }} || true
+        kubectl get namespaces
