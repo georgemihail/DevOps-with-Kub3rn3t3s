@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - pingpong-backend-postgres/manifest/secret.yaml
+  - pingpong-backend-postgres/manifest/configmaps.yaml
+  - postgres-db/persistentvolumeclaim.yaml
+  - postgres-db/statefulset.yaml
+  - pingpong-backend-postgres/manifest/deployment.yaml
+  - pingpong-backend-postgres/manifest/service.yaml
+  - ping-pong/manifest/configmaps.yaml
+  - ping-pong/manifest/service.yaml
+  - main-app/manifest/configmaps.yaml
+  - main-app/manifest/deployment.yaml
+  - main-app/manifest/services.yaml
+  - main-app/manifest/ingress.yaml

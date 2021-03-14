@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-ping-connected
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pingpongconnected
+  template:
+    metadata:
+      labels:
+        app: pingpongconnected
+    spec:
+      containers:
+        - name: ping-pong-connecting
+          image: IMAGE-PINGPONG
+        - name: main-image-connecting
+          image: IMAGE-MAIN
+          env:
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: special-config
+                  key: MESSAGE

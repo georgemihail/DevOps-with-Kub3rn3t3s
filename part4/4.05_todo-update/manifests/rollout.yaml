@@ -1,0 +1,82 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: todo-app-psg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todobackendpsg
+  strategy:
+    canary:
+      steps:
+      - setWeight: 50
+      - pause: {duration: 2m}
+      - analysis:
+          templates:
+          - templateName: cpu-usage-rate
+  template:
+    metadata:
+      labels:
+        app: todobackendpsg
+    spec:
+      volumes:
+        - name: shared-image
+          persistentVolumeClaim:
+            claimName: image-claim
+      containers:
+        - name: image-fetch-healthcheck
+          image: georgemihail/image-fetch-health:latest
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            httpGet:
+              path: /healthz
+              port: 3004
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            httpGet:
+              path: /healthz
+              port: 3004
+        - name: todo-static-healthcheck
+          image: georgemihail/todo-static-healthcheck:latest
+          env:
+            - name: USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: USERNAME
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: psg-secret
+                  key: PASSWORD
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: HOST
+            - name: DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: DATABASE
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            httpGet:
+              path: /healthz
+              port: 3005
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            httpGet:
+              path: /healthz
+              port: 3005

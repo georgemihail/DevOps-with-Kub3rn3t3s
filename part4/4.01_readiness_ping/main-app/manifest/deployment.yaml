@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-ping-connected
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pingpongconnected
+  template:
+    metadata:
+      labels:
+        app: pingpongconnected
+    spec:
+      containers:
+        - name: main-image-connecting
+          image: georgemihail/main-app-healthcheck:latest
+          env:
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: special-config
+                  key: MESSAGE
+            - name: PONGURL
+              valueFrom:
+                configMapKeyRef:
+                  name: special-config
+                  key: PONGURL
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 3000
+        - name: ping-pong-client
+          image: georgemihail/pingpong-client-healthcheck:latest
+          env:
+            - name: BACKENDLINK
+              valueFrom:
+                configMapKeyRef:
+                  name: pingpong-client-config
+                  key: BACKENDLINK
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+              path: /healthz
+              port: 3003
