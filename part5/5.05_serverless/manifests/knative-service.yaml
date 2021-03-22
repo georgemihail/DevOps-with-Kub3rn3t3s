@@ -1,0 +1,11 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: pingpong
+spec:
+  template:
+    metadata:
+      name: pingpong-v1
+    spec:
+      containers:
+        - image: georgemihail/ping-pong-serverless

@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-psg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todobackendpsg
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: todobackendpsg
+    spec:
+      containers:
+      - image: georgemihail/image-fetch-health
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3004
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        name: image-fetch-healthcheck
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3004
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        volumeMounts:
+        - mountPath: /usr/src/app/src/image
+          name: shared-image
+      - env:
+        - name: USERNAME
+          valueFrom:
+            configMapKeyRef:
+              key: USERNAME
+              name: todo-backend-cfm
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PASSWORD
+              name: psg-secret
+        - name: HOST
+          valueFrom:
+            configMapKeyRef:
+              key: HOST
+              name: todo-backend-cfm
+        - name: DATABASE
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE
+              name: todo-backend-cfm
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              key: NATS_URL
+              name: todo-backend-cfm
+        image: georgemihail/todo-static-nats
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3005
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        name: todo-static-nats
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3005
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        volumeMounts:
+        - mountPath: /usr/src/app/src/image
+          name: shared-image
+      volumes:
+      - name: shared-image
+        persistentVolumeClaim:
+          claimName: image-claim
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broadcaster-todo-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todobroadcaster
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: todobroadcaster
+    spec:
+      containers:
+      - env:
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              key: NATS_URL
+              name: todo-backend-cfm
+        - name: BOT
+          valueFrom:
+            secretKeyRef:
+              key: BOT
+              name: psg-secret
+        - name: CHAT
+          valueFrom:
+            secretKeyRef:
+              key: CHAT
+              name: psg-secret
+        image: georgemihail/broadcaster-todo
+        name: broadcaster-todo
+---

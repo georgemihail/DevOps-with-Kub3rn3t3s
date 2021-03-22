@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-psg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todobackendpsg
+  template:
+    metadata:
+      labels:
+        app: todobackendpsg
+    spec:
+      volumes:
+        - name: shared-image
+          persistentVolumeClaim:
+            claimName: image-claim
+      containers:
+        - name: image-fetch-healthcheck
+          image: georgemihail/image-fetch-health # FETCH-PHOTO-IMAGE
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            httpGet:
+              path: /healthz
+              port: 3004
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            httpGet:
+              path: /healthz
+              port: 3004
+        - name: todo-static-nats
+          image: georgemihail/todo-static-nats # TODO-STATIC-IMAGE
+          env:
+            - name: USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: USERNAME
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: psg-secret
+                  key: PASSWORD
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: HOST
+            - name: DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: DATABASE
+            - name: NATS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: NATS_URL
+          volumeMounts:
+          - name: shared-image
+            mountPath: /usr/src/app/src/image
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            httpGet:
+              path: /healthz
+              port: 3005
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            httpGet:
+              path: /healthz
+              port: 3005
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broadcaster-todo-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todobroadcaster
+  template:
+    metadata:
+      labels:
+        app: todobroadcaster
+    spec:
+      containers:
+        - name: broadcaster-todo
+          image: georgemihail/broadcaster-todo
+          env:
+            - name: NATS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-backend-cfm
+                  key: NATS_URL
+            - name: BOT
+              valueFrom:
+                secretKeyRef:
+                  name: psg-secret
+                  key: BOT
+            - name: CHAT
+              valueFrom:
+                secretKeyRef:
+                  name: psg-secret
+                  key: CHAT
